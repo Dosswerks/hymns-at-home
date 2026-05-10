@@ -1,0 +1,74 @@
+{
+  "songs": [
+    {
+      "id": "gospel/amazing-grace",
+      "title": "Amazing Grace",
+      "genre": "Gospel",
+      "path": "songs/gospel/amazing-grace.mp3",
+      "duration": 162
+    },
+    {
+      "id": "gospel/blessed-assurance",
+      "title": "Blessed Assurance",
+      "genre": "Gospel",
+      "path": "songs/gospel/blessed-assurance.mp3",
+      "duration": 138
+    },
+    {
+      "id": "gospel/just-as-i-am",
+      "title": "Just As I Am",
+      "genre": "Gospel",
+      "path": "songs/gospel/just-as-i-am.mp3",
+      "duration": 129
+    },
+    {
+      "id": "gospel/my-jesus-i-love-thee",
+      "title": "My Jesus I Love Thee",
+      "genre": "Gospel",
+      "path": "songs/gospel/my-jesus-i-love-thee.mp3",
+      "duration": 117
+    },
+    {
+      "id": "gospel/rock-of-ages",
+      "title": "Rock Of Ages",
+      "genre": "Gospel",
+      "path": "songs/gospel/rock-of-ages.mp3",
+      "duration": 81
+    },
+    {
+      "id": "gospel/savior-like-a-shepherd-lead-us",
+      "title": "Savior Like A Shepherd Lead Us",
+      "genre": "Gospel",
+      "path": "songs/gospel/savior-like-a-shepherd-lead-us.mp3",
+      "duration": 108
+    },
+    {
+      "id": "gospel/sweet-hour-of-prayer",
+      "title": "Sweet Hour Of Prayer",
+      "genre": "Gospel",
+      "path": "songs/gospel/sweet-hour-of-prayer.mp3",
+      "duration": 192
+    },
+    {
+      "id": "gospel/the-lilly-of-the-valley",
+      "title": "The Lilly Of The Valley",
+      "genre": "Gospel",
+      "path": "songs/gospel/the-lilly-of-the-valley.mp3",
+      "duration": 128
+    },
+    {
+      "id": "gospel/the-old-rugged-cross",
+      "title": "The Old Rugged Cross",
+      "genre": "Gospel",
+      "path": "songs/gospel/the-old-rugged-cross.mp3",
+      "duration": 216
+    },
+    {
+      "id": "gospel/tis-so-sweet-to-trust-in-jesus",
+      "title": "Tis So Sweet To Trust In Jesus",
+      "genre": "Gospel",
+      "path": "songs/gospel/tis-so-sweet-to-trust-in-jesus.mp3",
+      "duration": 125
+    }
+  ]
+}
