@@ -1289,7 +1289,6 @@ class HymnsApp {
       const row = document.createElement('div');
       row.className = 'song-row';
       row.setAttribute('role', 'option');
-      row.setAttribute('aria-selected', this.state.ui.selectedSongIds.has(song.id) ? 'true' : 'false');
       row.dataset.songId = song.id;
 
       if (this.state.playback.currentSongId === song.id) {
@@ -1308,7 +1307,6 @@ class HymnsApp {
         } else {
           this.state.ui.selectedSongIds.delete(song.id);
         }
-        row.setAttribute('aria-selected', checkbox.checked ? 'true' : 'false');
         this._updateSelectionButtons();
       });
 
@@ -1316,17 +1314,12 @@ class HymnsApp {
       title.className = 'song-row__title';
       title.textContent = song.title;
 
-      const genre = document.createElement('span');
-      genre.className = 'song-row__genre';
-      genre.textContent = song.genre;
-
       const duration = document.createElement('span');
       duration.className = 'song-row__duration';
       duration.textContent = song.duration ? formatTime(song.duration) : '';
 
       row.appendChild(checkbox);
       row.appendChild(title);
-      row.appendChild(genre);
       row.appendChild(duration);
 
       // Click row to play (not on checkbox)
@@ -1337,6 +1330,14 @@ class HymnsApp {
 
       container.appendChild(row);
     });
+
+    // Show total time
+    const totalEl = document.getElementById('song-list-total');
+    if (totalEl) {
+      const totalSeconds = this.state.filteredSongs.reduce((sum, s) => sum + (s.duration || 0), 0);
+      const count = this.state.filteredSongs.length;
+      totalEl.textContent = `${count} song${count !== 1 ? 's' : ''} · ${formatTime(totalSeconds)}`;
+    }
   }
 
   _renderPlaylists() {
@@ -1356,8 +1357,11 @@ class HymnsApp {
     this.state.playlists.forEach(playlist => {
       const entry = document.createElement('div');
       entry.className = 'playlist-entry';
-      entry.setAttribute('role', 'button');
-      entry.setAttribute('tabindex', '0');
+
+      const header = document.createElement('div');
+      header.className = 'playlist-entry__header';
+      header.setAttribute('role', 'button');
+      header.setAttribute('tabindex', '0');
 
       const info = document.createElement('div');
 
@@ -1368,7 +1372,6 @@ class HymnsApp {
       const meta = document.createElement('span');
       meta.className = 'playlist-entry__meta';
       const songCount = playlist.songIds.length;
-      // Calculate total duration
       const totalDuration = playlist.songIds.reduce((sum, id) => {
         const song = this.state.library.find(s => s.id === id);
         return sum + (song ? (song.duration || 0) : 0);
@@ -1382,6 +1385,24 @@ class HymnsApp {
       const actions = document.createElement('div');
       actions.className = 'playlist-entry__actions';
 
+      const playBtn = document.createElement('button');
+      playBtn.className = 'btn btn--small';
+      playBtn.textContent = '▶';
+      playBtn.setAttribute('aria-label', `Play ${playlist.name}`);
+      playBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this._loadPlaylist(playlist);
+      });
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn btn--small';
+      editBtn.textContent = '✎';
+      editBtn.setAttribute('aria-label', `Edit ${playlist.name}`);
+      editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this._renderPlaylistDetail(playlist);
+      });
+
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'btn btn--small';
       deleteBtn.textContent = '✕';
@@ -1391,30 +1412,127 @@ class HymnsApp {
         this._confirmDeletePlaylist(playlist);
       });
 
+      actions.appendChild(playBtn);
+      actions.appendChild(editBtn);
       actions.appendChild(deleteBtn);
 
-      entry.appendChild(info);
-      entry.appendChild(actions);
+      header.appendChild(info);
+      header.appendChild(actions);
 
-      // Click to load playlist
-      entry.addEventListener('click', () => this._loadPlaylist(playlist));
-      entry.addEventListener('keydown', (e) => {
+      // Click header to play
+      header.addEventListener('click', () => this._loadPlaylist(playlist));
+      header.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           this._loadPlaylist(playlist);
         }
       });
 
+      entry.appendChild(header);
       container.appendChild(entry);
     });
   }
 
+  _renderPlaylistDetail(playlist) {
+    const container = document.getElementById('playlist-list');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    // Back button
+    const backBtn = document.createElement('button');
+    backBtn.className = 'btn btn--small';
+    backBtn.textContent = '← Back';
+    backBtn.setAttribute('aria-label', 'Back to playlists');
+    backBtn.addEventListener('click', () => this._renderPlaylists());
+    container.appendChild(backBtn);
+
+    // Playlist title
+    const titleEl = document.createElement('h3');
+    titleEl.className = 'playlist-detail__title';
+    titleEl.textContent = playlist.name;
+    container.appendChild(titleEl);
+
+    // Song list with move up/down
+    const list = document.createElement('div');
+    list.className = 'playlist-detail__songs';
+
+    playlist.songIds.forEach((songId, index) => {
+      const song = this.state.library.find(s => s.id === songId);
+      if (!song) return;
+
+      const row = document.createElement('div');
+      row.className = 'playlist-detail__row';
+
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'playlist-detail__song-title';
+      titleSpan.textContent = song.title;
+
+      const controls = document.createElement('div');
+      controls.className = 'playlist-detail__controls';
+
+      const upBtn = document.createElement('button');
+      upBtn.className = 'btn btn--small';
+      upBtn.textContent = '↑';
+      upBtn.setAttribute('aria-label', `Move ${song.title} up`);
+      upBtn.disabled = index === 0;
+      upBtn.addEventListener('click', () => {
+        this._movePlaylistSong(playlist, index, index - 1);
+      });
+
+      const downBtn = document.createElement('button');
+      downBtn.className = 'btn btn--small';
+      downBtn.textContent = '↓';
+      downBtn.setAttribute('aria-label', `Move ${song.title} down`);
+      downBtn.disabled = index === playlist.songIds.length - 1;
+      downBtn.addEventListener('click', () => {
+        this._movePlaylistSong(playlist, index, index + 1);
+      });
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'btn btn--small';
+      removeBtn.textContent = '✕';
+      removeBtn.setAttribute('aria-label', `Remove ${song.title}`);
+      removeBtn.addEventListener('click', () => {
+        playlist.songIds.splice(index, 1);
+        playlist.updatedAt = Date.now();
+        this._savePlaylists();
+        this._renderPlaylistDetail(playlist);
+      });
+
+      controls.appendChild(upBtn);
+      controls.appendChild(downBtn);
+      controls.appendChild(removeBtn);
+
+      row.appendChild(titleSpan);
+      row.appendChild(controls);
+      list.appendChild(row);
+    });
+
+    container.appendChild(list);
+
+    if (playlist.songIds.length === 0) {
+      const emptyMsg = document.createElement('p');
+      emptyMsg.className = 'playlist-detail__empty';
+      emptyMsg.textContent = 'This playlist is empty.';
+      container.appendChild(emptyMsg);
+    }
+  }
+
+  _movePlaylistSong(playlist, fromIndex, toIndex) {
+    const [song] = playlist.songIds.splice(fromIndex, 1);
+    playlist.songIds.splice(toIndex, 0, song);
+    playlist.updatedAt = Date.now();
+    this._savePlaylists();
+    this._renderPlaylistDetail(playlist);
+  }
+
   _updateSelectionButtons() {
     const playBtn = document.getElementById('btn-play-selected');
-    const addBtn = document.getElementById('btn-add-queue');
+    const createBtn = document.getElementById('btn-create-playlist');
     const hasSelection = this.state.ui.selectedSongIds.size > 0;
     if (playBtn) playBtn.disabled = !hasSelection;
-    if (addBtn) addBtn.disabled = !hasSelection;
+    if (createBtn) createBtn.disabled = !hasSelection;
   }
 
   _updatePlayerUI() {
@@ -1690,7 +1808,7 @@ class HymnsApp {
       });
     }
 
-    // Play All / Play Selected / Add to Queue buttons
+    // Play All button
     const playAllBtn = document.getElementById('btn-play-all');
     if (playAllBtn) {
       playAllBtn.addEventListener('click', () => {
@@ -1699,20 +1817,23 @@ class HymnsApp {
       });
     }
 
+    // Play Selected button
     const playSelectedBtn = document.getElementById('btn-play-selected');
     if (playSelectedBtn) {
-      playSelectedBtn.addEventListener('click', () => this._playSelected());
-    }
-
-    const addQueueBtn = document.getElementById('btn-add-queue');
-    if (addQueueBtn) {
-      addQueueBtn.addEventListener('click', () => this._addToQueue());
+      playSelectedBtn.addEventListener('click', () => {
+        this.audio.init();
+        this._playSelected();
+      });
     }
 
     // Create Playlist
     const createPlaylistBtn = document.getElementById('btn-create-playlist');
     if (createPlaylistBtn) {
       createPlaylistBtn.addEventListener('click', () => {
+        if (this.state.ui.selectedSongIds.size === 0) {
+          this._announce('Select some songs first, then create a playlist.');
+          return;
+        }
         const dialog = document.getElementById('dialog-playlist-name');
         if (dialog) dialog.showModal();
       });
@@ -1757,7 +1878,7 @@ class HymnsApp {
     }
 
     // Timed Playback
-    const timedBtn = document.getElementById('btn-timed');
+    const timedBtn = document.getElementById('btn-timed-top');
     const timedDialog = document.getElementById('dialog-timed');
     const timedCancelBtn = document.getElementById('dialog-timed-cancel');
 
