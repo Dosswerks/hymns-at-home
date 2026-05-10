@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; font-src 'self'; connect-src 'self'">
+  <title>Hymns At Home</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#d4a056">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+</head>
+<body>
+  <!-- Hero Section -->
+  <header class="hero" role="banner">
+    <div class="hero__slideshow" aria-hidden="true">
+      <img src="assets/hero-1.jpg" alt="" class="hero__image hero__image--active" width="800" height="600">
+      <img src="assets/hero-2.jpg" alt="" class="hero__image" width="800" height="600">
+      <img src="assets/hero-3.jpg" alt="" class="hero__image" width="800" height="600">
+      <img src="assets/hero-4.jpg" alt="" class="hero__image" width="800" height="600">
+    </div>
+    <div class="hero__content">
+      <img src="assets/hah-logo.png" alt="Hymns At Home" class="hero__logo" width="1090" height="167">
+      <p class="hero__subtitle">Andrew Doss, piano</p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main" role="main">
+    <!-- Song List -->
+    <section class="song-list" aria-label="Song library">
+      <div class="song-list__header">
+        <button class="btn btn--primary btn--play-all" id="btn-play-all" aria-label="Play all songs">▶ Play All</button>
+        <button class="btn btn--play-selected" id="btn-play-selected" disabled aria-label="Play selected songs">Play Selected</button>
+        <button class="btn btn--add-queue" id="btn-add-queue" disabled aria-label="Add selected songs to queue">Add to Queue</button>
+      </div>
+      <div class="song-list__container" id="song-list-container" role="listbox" aria-label="Available songs" tabindex="0">
+        <!-- Song rows rendered by JS -->
+      </div>
+      <div class="song-list__empty" id="song-list-empty" role="status" hidden>
+        <!-- Empty state messages -->
+      </div>
+    </section>
+
+    <!-- Controls Bar (below song list) -->
+    <div class="controls">
+      <div class="controls__filters">
+        <div class="genre-filter" role="group" aria-label="Filter by genre">
+          <!-- Genre buttons rendered by JS -->
+        </div>
+        <div class="search-bar">
+          <label for="search-input" class="sr-only">Search songs</label>
+          <input type="search" id="search-input" class="search-bar__input" placeholder="Search songs..." autocomplete="off">
+        </div>
+        <div class="sort-control">
+          <label for="sort-select" class="sr-only">Sort songs</label>
+          <select id="sort-select" class="sort-control__select">
+            <option value="az">A–Z</option>
+            <option value="za">Z–A</option>
+            <option value="recent">Recently Played</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Playlist Panel -->
+    <aside class="playlist-panel" aria-label="Saved playlists">
+      <h2 class="playlist-panel__title">Playlists</h2>
+      <div class="playlist-panel__list" id="playlist-list">
+        <!-- Playlist entries rendered by JS -->
+      </div>
+      <div class="playlist-panel__empty" id="playlist-empty" role="status" hidden>
+        You haven't saved any playlists yet. Create one to get started!
+      </div>
+      <button class="btn btn--create-playlist" id="btn-create-playlist" aria-label="Create new playlist">+ New Playlist</button>
+    </aside>
+  </main>
+
+  <!-- Player Bar (fixed bottom) -->
+  <div class="player-bar" role="region" aria-label="Audio player">
+    <div class="player-bar__now-playing">
+      <span class="player-bar__status" id="player-status" aria-live="polite"></span>
+      <span class="player-bar__song-title" id="player-song-title"></span>
+    </div>
+
+    <div class="player-bar__progress">
+      <span class="player-bar__time" id="player-elapsed" aria-hidden="true">0:00</span>
+      <div class="player-bar__progress-track" id="progress-track" role="slider" aria-label="Song progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" tabindex="0">
+        <div class="player-bar__progress-fill" id="progress-fill"></div>
+      </div>
+      <span class="player-bar__time" id="player-duration" aria-hidden="true">0:00</span>
+    </div>
+
+    <div class="player-bar__controls">
+      <button class="player-btn" id="btn-shuffle" aria-label="Shuffle: Off" aria-pressed="false">
+        <svg class="player-btn__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+        </svg>
+      </button>
+      <button class="player-btn" id="btn-prev" aria-label="Previous song">
+        <svg class="player-btn__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+        </svg>
+      </button>
+      <button class="player-btn player-btn--play" id="btn-play-pause" aria-label="Play">
+        <svg class="player-btn__icon icon-play" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg class="player-btn__icon icon-pause" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" style="display:none">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+        <span class="player-btn__loading" id="player-loading" hidden aria-label="Loading">
+          <span class="spinner"></span>
+        </span>
+      </button>
+      <button class="player-btn" id="btn-next" aria-label="Next song">
+        <svg class="player-btn__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+        </svg>
+      </button>
+      <button class="player-btn" id="btn-loop" aria-label="Loop: Off" aria-pressed="false">
+        <svg class="player-btn__icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="player-bar__volume">
+      <button class="player-btn" id="btn-mute" aria-label="Mute">
+        <svg class="player-btn__icon icon-volume" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+        <svg class="player-btn__icon icon-muted" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display:none">
+          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+        </svg>
+      </button>
+      <label for="volume-slider" class="sr-only">Volume</label>
+      <input type="range" id="volume-slider" class="player-bar__volume-slider" min="0" max="100" value="100" aria-label="Volume">
+    </div>
+
+    <!-- Timed Playback -->
+    <div class="player-bar__timed">
+      <button class="player-btn" id="btn-timed" aria-label="Timed playback">
+        <svg class="player-btn__icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
+        </svg>
+      </button>
+      <span class="player-bar__timer" id="player-timer" hidden aria-live="polite"></span>
+    </div>
+  </div>
+
+  <!-- Timed Playback Dialog -->
+  <dialog class="dialog" id="dialog-timed" aria-labelledby="dialog-timed-title">
+    <h2 id="dialog-timed-title">Timed Playback</h2>
+    <p>How long would you like to listen?</p>
+    <div class="dialog__options">
+      <button class="btn" data-minutes="15">15 min</button>
+      <button class="btn" data-minutes="30">30 min</button>
+      <button class="btn" data-minutes="45">45 min</button>
+      <button class="btn" data-minutes="60">1 hour</button>
+      <button class="btn" data-minutes="90">1.5 hours</button>
+      <button class="btn" data-minutes="120">2 hours</button>
+    </div>
+    <button class="btn btn--cancel" id="dialog-timed-cancel">Cancel</button>
+  </dialog>
+
+  <!-- Playlist Name Dialog -->
+  <dialog class="dialog" id="dialog-playlist-name" aria-labelledby="dialog-playlist-title">
+    <h2 id="dialog-playlist-title">Save Playlist</h2>
+    <label for="playlist-name-input">Playlist name:</label>
+    <input type="text" id="playlist-name-input" class="dialog__input" maxlength="50" placeholder="My Playlist">
+    <div class="dialog__actions">
+      <button class="btn btn--cancel" id="dialog-playlist-cancel">Cancel</button>
+      <button class="btn btn--primary" id="dialog-playlist-save">Save</button>
+    </div>
+  </dialog>
+
+  <!-- Delete Confirmation Dialog -->
+  <dialog class="dialog" id="dialog-confirm-delete" aria-labelledby="dialog-delete-title">
+    <h2 id="dialog-delete-title">Delete Playlist</h2>
+    <p id="dialog-delete-message"></p>
+    <div class="dialog__actions">
+      <button class="btn btn--cancel" id="dialog-delete-cancel">Cancel</button>
+      <button class="btn btn--danger" id="dialog-delete-confirm">Delete</button>
+    </div>
+  </dialog>
+
+  <!-- ARIA Live Region for announcements -->
+  <div class="sr-only" aria-live="polite" aria-atomic="true" id="sr-announcements"></div>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <p class="footer__text">Made with love by Andrew</p>
+    <a href="?reset" class="footer__reset" id="footer-reset">Reset saved data</a>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
