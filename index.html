@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; font-src 'self'; connect-src 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self'; media-src 'self'; font-src 'self'; connect-src 'self'; form-action 'self' https://www.paypal.com">
   <title>Hymns At Home</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="manifest" href="manifest.json">
@@ -35,7 +35,8 @@
       <div class="song-list__header">
         <button class="btn btn--primary btn--play-all" id="btn-play-all" aria-label="Play all songs">Play All</button>
         <button class="btn btn--play-selected" id="btn-play-selected" disabled aria-label="Play selected songs">Play Selected</button>
-        <button class="btn btn--add-queue" id="btn-add-queue" disabled aria-label="Add selected songs to queue">Add to Queue</button>
+        <button class="btn" id="btn-timed-top" aria-label="Timed playback">Timed Play</button>
+        <button class="btn" id="btn-create-playlist" disabled aria-label="Create new playlist">New Playlist</button>
       </div>
       <div class="song-list__container" id="song-list-container" role="listbox" aria-label="Available songs" tabindex="0">
         <!-- Song rows rendered by JS -->
@@ -43,10 +44,11 @@
       <div class="song-list__empty" id="song-list-empty" role="status" hidden>
         <!-- Empty state messages -->
       </div>
+      <div class="song-list__total" id="song-list-total"></div>
     </section>
 
-    <!-- Controls Bar (below song list) -->
-    <div class="controls">
+    <!-- Controls Bar (hidden for now) -->
+    <div class="controls" hidden>
       <div class="controls__filters">
         <div class="genre-filter" role="group" aria-label="Filter by genre">
           <!-- Genre buttons rendered by JS -->
@@ -75,7 +77,7 @@
       <div class="playlist-panel__empty" id="playlist-empty" role="status" hidden>
         You haven't saved any playlists yet. Create one to get started!
       </div>
-      <button class="btn btn--create-playlist" id="btn-create-playlist" aria-label="Create new playlist">+ New Playlist</button>
+      <button class="btn btn--create-playlist" id="btn-create-playlist-panel" aria-label="Create new playlist" hidden>+ New Playlist</button>
     </aside>
   </main>
 
@@ -141,13 +143,8 @@
       <input type="range" id="volume-slider" class="player-bar__volume-slider" min="0" max="100" value="100" aria-label="Volume">
     </div>
 
-    <!-- Timed Playback -->
+    <!-- Timed Playback Timer Display -->
     <div class="player-bar__timed">
-      <button class="player-btn" id="btn-timed" aria-label="Timed playback">
-        <svg class="player-btn__icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-          <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
-        </svg>
-      </button>
       <span class="player-bar__timer" id="player-timer" hidden aria-live="polite"></span>
     </div>
   </div>
@@ -193,12 +190,47 @@
 
   <!-- Footer -->
   <footer class="footer" role="contentinfo">
-    <p class="footer__text">Made with love by Andrew</p>
-    <a href="?reset" class="footer__reset" id="footer-reset">Reset saved data</a>
+    <p class="footer__copyright">&copy; 2026 <a href="https://andrewdoss.com" target="_blank" rel="noopener noreferrer">Andrew Doss</a>. All Rights Reserved.</p>
+    <div class="tip-jar-section">
+      <p class="tip-jar-section__text">Enjoying the music? Donations help keep the songs coming!</p>
+      <div class="tip-jar-section__content">
+        <form action="https://www.paypal.com/donate" method="post" target="_blank">
+          <input type="hidden" name="hosted_button_id" value="HDD77QKGC6XXN">
+          <button type="submit" class="tip-jar-btn" aria-label="Donate via PayPal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="100" viewBox="0 0 80 100" fill="none">
+              <rect x="16" y="8" width="48" height="8" rx="2" fill="#aaa"/>
+              <rect x="34" y="2" width="12" height="8" rx="2" fill="#999"/>
+              <rect x="36" y="4" width="8" height="3" rx="1" fill="#777"/>
+              <path d="M18 16 L16 82 Q16 90 24 90 L56 90 Q64 90 64 82 L62 16 Z" fill="rgba(180,220,255,0.18)" stroke="rgba(200,230,255,0.5)" stroke-width="2"/>
+              <path d="M22 20 L21 75" stroke="rgba(255,255,255,0.15)" stroke-width="3" stroke-linecap="round"/>
+              <text x="40" y="38" text-anchor="middle" font-size="9" font-weight="bold" fill="rgba(255,255,255,0.7)" font-family="sans-serif" letter-spacing="1">DONATE</text>
+              <g transform="rotate(-12 40 55)"><rect x="26" y="48" width="30" height="16" rx="2" fill="#3a7d44"/><text x="41" y="60" text-anchor="middle" font-size="12" font-weight="bold" fill="#6ec77a" font-family="serif">$</text></g>
+              <g transform="rotate(8 40 60)"><rect x="24" y="54" width="30" height="16" rx="2" fill="#2e6b38"/><text x="39" y="66" text-anchor="middle" font-size="12" font-weight="bold" fill="#5cb868" font-family="serif">$</text></g>
+              <g transform="rotate(-5 40 65)"><rect x="28" y="62" width="30" height="16" rx="2" fill="#357a3f"/><text x="43" y="74" text-anchor="middle" font-size="12" font-weight="bold" fill="#7dd48a" font-family="serif">$</text></g>
+              <ellipse cx="30" cy="78" rx="6" ry="3" fill="#d4a017" stroke="#b8860b" stroke-width="1"/>
+              <ellipse cx="42" cy="80" rx="5" ry="2.5" fill="#daa520" stroke="#b8860b" stroke-width="1"/>
+              <ellipse cx="52" cy="77" rx="5" ry="3" fill="#c9960c" stroke="#a07608" stroke-width="1"/>
+            </svg>
+          </button>
+        </form>
+        <div id="qr-code" class="qr-code"></div>
+      </div>
+    </div>
+    <a href="?reset" class="footer__reset" id="footer-reset" hidden>Reset saved data</a>
   </footer>
 
   </div><!-- /.app -->
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <script type="module" src="js/app.js"></script>
+  <script>
+    (function(){
+      var qr = qrcode(0, 'L');
+      qr.addData('https://www.paypal.com/donate/?hosted_button_id=HDD77QKGC6XXN');
+      qr.make();
+      var el = document.getElementById('qr-code');
+      if (el) el.innerHTML = qr.createSvgTag({cellSize:2, margin:0});
+    })();
+  </script>
 </body>
 </html>
