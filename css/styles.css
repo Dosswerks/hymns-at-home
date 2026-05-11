@@ -530,16 +530,12 @@ body {
 /* ===== PLAYER BAR ===== */
 .player-bar {
   background: var(--color-bg);
-  border-top: 2px solid var(--color-gold-dim);
+  border-top: 3px solid var(--color-gold-dim);
   padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
-  position: sticky;
-  bottom: 0;
-  z-index: 100;
 }
 
 .player-bar__now-playing {
