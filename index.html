@@ -43,60 +43,7 @@
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="main" role="main">
-    <!-- Song List -->
-    <section class="song-list" aria-label="Song library">
-      <div class="song-list__header">
-        <button class="btn btn--primary btn--play-all" id="btn-play-all" aria-label="Play all songs">Play All</button>
-        <button class="btn btn--play-selected" id="btn-play-selected" disabled aria-label="Play selected songs">Play Selected</button>
-        <button class="btn" id="btn-timed-top" aria-label="Timed playback">Timed Play</button>
-        <button class="btn" id="btn-create-playlist" disabled aria-label="Create new playlist">New Playlist</button>
-      </div>
-      <div class="song-list__container" id="song-list-container" role="listbox" aria-label="Available songs" tabindex="0">
-        <!-- Song rows rendered by JS -->
-      </div>
-      <div class="song-list__empty" id="song-list-empty" role="status" hidden>
-        <!-- Empty state messages -->
-      </div>
-      <div class="song-list__total" id="song-list-total"></div>
-    </section>
-
-    <!-- Controls Bar (hidden for now) -->
-    <div class="controls" hidden>
-      <div class="controls__filters">
-        <div class="genre-filter" role="group" aria-label="Filter by genre">
-          <!-- Genre buttons rendered by JS -->
-        </div>
-        <div class="search-bar">
-          <label for="search-input" class="sr-only">Search songs</label>
-          <input type="search" id="search-input" class="search-bar__input" placeholder="Search songs..." autocomplete="off">
-        </div>
-        <div class="sort-control">
-          <label for="sort-select" class="sr-only">Sort songs</label>
-          <select id="sort-select" class="sort-control__select">
-            <option value="az">A–Z</option>
-            <option value="za">Z–A</option>
-            <option value="recent">Recently Played</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Playlist Panel -->
-    <aside class="playlist-panel" aria-label="Saved playlists">
-      <h2 class="playlist-panel__title">Playlists</h2>
-      <div class="playlist-panel__list" id="playlist-list">
-        <!-- Playlist entries rendered by JS -->
-      </div>
-      <div class="playlist-panel__empty" id="playlist-empty" role="status" hidden>
-        You haven't saved any playlists yet. Create one to get started!
-      </div>
-      <button class="btn btn--create-playlist" id="btn-create-playlist-panel" aria-label="Create new playlist" hidden>+ New Playlist</button>
-    </aside>
-  </main>
-
-  <!-- Player Bar (fixed bottom) -->
+  <!-- Player Bar -->
   <div class="player-bar" role="region" aria-label="Audio player">
     <div class="player-bar__now-playing">
       <span class="player-bar__status" id="player-status" aria-live="polite"></span>
@@ -163,6 +110,59 @@
       <span class="player-bar__timer" id="player-timer" hidden aria-live="polite"></span>
     </div>
   </div>
+
+  <!-- Main Content -->
+  <main class="main" role="main">
+    <!-- Song List -->
+    <section class="song-list" aria-label="Song library">
+      <div class="song-list__header">
+        <button class="btn btn--primary btn--play-all" id="btn-play-all" aria-label="Play all songs">Play All</button>
+        <button class="btn btn--play-selected" id="btn-play-selected" disabled aria-label="Play selected songs">Play Selected</button>
+        <button class="btn" id="btn-timed-top" aria-label="Timed playback">Timed Play</button>
+        <button class="btn" id="btn-create-playlist" disabled aria-label="Create new playlist">New Playlist</button>
+      </div>
+      <div class="song-list__container" id="song-list-container" role="listbox" aria-label="Available songs" tabindex="0">
+        <!-- Song rows rendered by JS -->
+      </div>
+      <div class="song-list__empty" id="song-list-empty" role="status" hidden>
+        <!-- Empty state messages -->
+      </div>
+      <div class="song-list__total" id="song-list-total"></div>
+    </section>
+
+    <!-- Controls Bar (hidden for now) -->
+    <div class="controls" hidden>
+      <div class="controls__filters">
+        <div class="genre-filter" role="group" aria-label="Filter by genre">
+          <!-- Genre buttons rendered by JS -->
+        </div>
+        <div class="search-bar">
+          <label for="search-input" class="sr-only">Search songs</label>
+          <input type="search" id="search-input" class="search-bar__input" placeholder="Search songs..." autocomplete="off">
+        </div>
+        <div class="sort-control">
+          <label for="sort-select" class="sr-only">Sort songs</label>
+          <select id="sort-select" class="sort-control__select">
+            <option value="az">A–Z</option>
+            <option value="za">Z–A</option>
+            <option value="recent">Recently Played</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Playlist Panel -->
+    <aside class="playlist-panel" aria-label="Saved playlists">
+      <h2 class="playlist-panel__title">Playlists</h2>
+      <div class="playlist-panel__list" id="playlist-list">
+        <!-- Playlist entries rendered by JS -->
+      </div>
+      <div class="playlist-panel__empty" id="playlist-empty" role="status" hidden>
+        You haven't saved any playlists yet. Create one to get started!
+      </div>
+      <button class="btn btn--create-playlist" id="btn-create-playlist-panel" aria-label="Create new playlist" hidden>+ New Playlist</button>
+    </aside>
+  </main>
 
   <!-- Timed Playback Dialog -->
   <dialog class="dialog" id="dialog-timed" aria-labelledby="dialog-timed-title">
