@@ -696,6 +696,11 @@ body {
 }
 
 /* ===== DIALOGS ===== */
+/* Polyfill: hide <dialog> when not open (for browsers without native support) */
+dialog:not([open]) {
+  display: none;
+}
+
 .dialog {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -710,6 +715,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 0;
+  z-index: 1000;
 }
 
 .dialog::backdrop {
