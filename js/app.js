@@ -1625,6 +1625,24 @@ class HymnsApp {
     }
   }
 
+  // --- Dialog Helpers (polyfill for older browsers without <dialog> support) ---
+
+  _openDialog(dialog) {
+    if (dialog.showModal) {
+      dialog.showModal();
+    } else {
+      dialog.setAttribute('open', '');
+    }
+  }
+
+  _closeDialog(dialog) {
+    if (dialog.close) {
+      dialog.close();
+    } else {
+      dialog.removeAttribute('open');
+    }
+  }
+
   _confirmDeletePlaylist(playlist) {
     const dialog = document.getElementById('dialog-confirm-delete');
     const msgEl = document.getElementById('dialog-delete-message');
@@ -1632,7 +1650,7 @@ class HymnsApp {
 
     if (msgEl) msgEl.textContent = `Delete "${playlist.name}"?`;
     dialog.dataset.playlistId = playlist.id;
-    dialog.showModal();
+    this._openDialog(dialog);
   }
 
 
@@ -1835,7 +1853,7 @@ class HymnsApp {
           return;
         }
         const dialog = document.getElementById('dialog-playlist-name');
-        if (dialog) dialog.showModal();
+        if (dialog) this._openDialog(dialog);
       });
     }
 
@@ -1850,12 +1868,12 @@ class HymnsApp {
         const name = playlistNameInput ? playlistNameInput.value.trim() : '';
         this._createPlaylist(name || 'My Playlist');
         if (playlistNameInput) playlistNameInput.value = '';
-        playlistDialog.close();
+        this._closeDialog(playlistDialog);
       });
     }
     if (playlistCancelBtn && playlistDialog) {
       playlistCancelBtn.addEventListener('click', () => {
-        playlistDialog.close();
+        this._closeDialog(playlistDialog);
       });
     }
 
@@ -1868,12 +1886,12 @@ class HymnsApp {
       deleteConfirmBtn.addEventListener('click', () => {
         const playlistId = deleteDialog.dataset.playlistId;
         if (playlistId) this._deletePlaylist(playlistId);
-        deleteDialog.close();
+        this._closeDialog(deleteDialog);
       });
     }
     if (deleteCancelBtn && deleteDialog) {
       deleteCancelBtn.addEventListener('click', () => {
-        deleteDialog.close();
+        this._closeDialog(deleteDialog);
       });
     }
 
@@ -1889,7 +1907,7 @@ class HymnsApp {
           this._stopTimedPlayback();
           this._announce('Timed playback cancelled');
         } else {
-          timedDialog.showModal();
+          this._openDialog(timedDialog);
         }
       });
     }
@@ -1898,7 +1916,7 @@ class HymnsApp {
       timedDialog.querySelectorAll('[data-minutes]').forEach(btn => {
         btn.addEventListener('click', () => {
           const minutes = parseInt(btn.dataset.minutes);
-          timedDialog.close();
+          this._closeDialog(timedDialog);
           this._startTimedPlayback(minutes);
           this._announce(`Timed playback started: ${minutes} minutes`);
         });
@@ -1906,7 +1924,7 @@ class HymnsApp {
     }
 
     if (timedCancelBtn && timedDialog) {
-      timedCancelBtn.addEventListener('click', () => timedDialog.close());
+      timedCancelBtn.addEventListener('click', () => this._closeDialog(timedDialog));
     }
 
     // Footer reset link
