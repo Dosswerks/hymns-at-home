@@ -611,7 +611,7 @@ class HymnsApp {
         if (saved.preferences) {
           this.state.ui.genreFilter = saved.preferences.genreFilter;
           this.state.ui.sortOrder = saved.preferences.sortOrder || 'az';
-          this.state.playback.volume = saved.preferences.volume ?? 1.0;
+          this.state.playback.volume = (saved.preferences.volume != null) ? saved.preferences.volume : 1.0;
         }
         if (saved.playback) {
           this.state.playback.shuffle = saved.playback.shuffle || false;
@@ -809,7 +809,7 @@ class HymnsApp {
   _playCurrent() {
     let idx = this.state.queue.currentIndex;
     if (this.state.queue.shuffledOrder) {
-      idx = this.state.queue.shuffledOrder[idx] ?? idx;
+      idx = (this.state.queue.shuffledOrder[idx] != null) ? this.state.queue.shuffledOrder[idx] : idx;
     }
 
     const song = this.state.queue.songs[idx];
@@ -902,7 +902,7 @@ class HymnsApp {
 
     let actualIdx = nextIdx;
     if (this.state.queue.shuffledOrder) {
-      actualIdx = this.state.queue.shuffledOrder[nextIdx] ?? nextIdx;
+      actualIdx = (this.state.queue.shuffledOrder[nextIdx] != null) ? this.state.queue.shuffledOrder[nextIdx] : nextIdx;
     }
 
     const nextSong = this.state.queue.songs[actualIdx];
@@ -922,7 +922,7 @@ class HymnsApp {
       // Restore original order, find current song's position
       if (this.state.queue.shuffledOrder && this.state.queue.currentIndex >= 0) {
         const actualIdx = this.state.queue.shuffledOrder[this.state.queue.currentIndex];
-        this.state.queue.currentIndex = actualIdx ?? this.state.queue.currentIndex;
+        this.state.queue.currentIndex = (actualIdx != null) ? actualIdx : this.state.queue.currentIndex;
       }
       this.state.queue.shuffledOrder = null;
     }
@@ -1771,7 +1771,7 @@ class HymnsApp {
 
       const handleScrub = (e) => {
         const rect = progressTrack.getBoundingClientRect();
-        const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const clientX = (e.clientX != null) ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
         const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
         this.audio.seekFraction(fraction);
       };
